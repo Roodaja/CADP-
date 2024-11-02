@@ -1,0 +1,213 @@
+
+{ 8. Una entidad bancaria de la ciudad de La Plata solicita realizar un programa destinado a la administración de
+ transferencias de dinero entre cuentas bancarias, efectuadas entre los meses de Enero y Noviembre del año
+ 2018.
+ El banco dispone de una lista de transferencias realizadas entre Enero y Noviembre del 2018. De cada
+ transferencia se conoce: número de cuenta origen, DNI de titular de cuenta origen, número de cuenta destino, 
+ DNI de titular de cuenta destino, fecha, hora, monto y el código del motivo de la transferencia (1:
+ alquiler, 2: expensas, 3: facturas, 4: préstamo, 5: seguro, 6: honorarios y 7: varios). Esta estructura no posee
+ orden alguno.
+ Se pide:
+ a) Generar una nueva estructura que contenga sólo las transferencias a terceros (son aquellas en las que
+ las cuentas origen y destino no pertenecen al mismo titular). Esta nueva estructura debe estar
+ ordenada por número de cuenta origen.
+ Una vez generada la estructura del inciso a), utilizar dicha estructura para:
+ b) Calcular e informar para cada cuenta de origen el monto total transferido a terceros.
+ c) Calcular e informar cuál es el código de motivo que más transferencias a terceros tuvo.
+ d) Calcular e informar la cantidad de transferencias a terceros realizadas en el mes de Junio en las cuales
+ el número de cuenta destino posea menos dígitos pares que impares.}
+program ej8Adicionales;
+
+const 
+    codigoMotivo = 7;
+type
+    rangoMotivo = 1..codigoMotivo;
+    
+    infoFecha = record
+        mes : integer;
+        dia : integer;
+        anio : integer;
+    end;
+    
+    tranferencia = record
+        numCuentaOrigen : integer;
+        dniCuentaOrigen : integer;
+        numCuentaDestino : integer;
+        dniCuentaDestino : integer;
+        fecha : infoFecha;
+        hora : integer;
+        monto : real;
+        codMotivo : rangoMotivo;
+    end;
+    
+    lista = ^nodo;
+    nodo = record
+        dato : tranferencia;
+        sig : lista;
+    end;
+    
+    vecMotivos = array [rangoMotivo] of integer;
+    
+procedure cargarListaTransferencia(var l : lista; t : tranferencia); // Se dispone
+
+// a) Generar una nueva estructura que contenga sólo las transferencias a terceros (son aquellas en las que
+// las cuentas origen y destino no pertenecen al mismo titular). Esta nueva estructura debe estar
+// ordenada por número de cuenta origen.
+
+procedure insertarOrdenado(var l2 : lista; t : transferencia);
+var
+    nuevo, act, ant : lista;
+begin
+    new(nuevo);
+    nuevo^.dato := t;
+    act := l;
+    ant := l;
+    
+    while ((act <> nil) and (t.numCuentaOrigen < act^.dato.numCuentaOrigen)) do
+    begin
+        ant := act;
+        act := act^.sig;
+    end;
+    
+    if (ant = act) then
+    begin
+        l := nuevo
+    end
+    else
+    begin
+        ant^.sig := act^.sig;
+    end;
+    nuevo^.sig := act;
+end;
+
+procedure recorrerListaTrans (l : lista; var l2 : lista);
+begin
+    while (l<>nil) do
+    begin
+        if (l^.dato.dniCuentaDestino <> l^.dato.dniCuentaOrigen) then
+        begin
+            insertarOrdenado(l2, l^.dato) // Inciso A
+        end;
+        
+        l := l^.sig;
+    end;
+end;
+
+// Una vez generada la estructura del inciso a), utilizar dicha estructura para:
+// b) Calcular e informar para cada cuenta de origen el monto total transferido a terceros.
+// c) Calcular e informar cuál es el código de motivo que más transferencias a terceros tuvo.
+// d) Calcular e informar la cantidad de transferencias a terceros realizadas en el mes de Junio en las cuales
+// el número de cuenta destino posea menos dígitos pares que impares.}
+
+procedure inicializarVector (var v : vecMotivos);
+var
+    i : rangoMotivo;
+begin
+    for i := 1 to codigoMotivo do
+    begin
+        v[i] := 0;
+    end;
+end;
+
+procedure actualizarMaximo(v : vecMotivos; maximo : integer; var motivoMin : integer);
+var
+    i : integer;
+begin
+    for i := 1 to codigoMotivo do
+    begin
+        if v[i] > maximo then
+        begin
+            maximo := v[i];
+            motivoMax := i;
+        end;
+    end;
+end;
+
+function cumple (num : integer) : boolean;
+var
+    cantPares, cantImpares : integer;
+    dig : integer;
+begin
+    cantImpares := 0;
+    cantPares := 0;
+    while num <> 0 do
+    begin
+        dig := num mod 10;
+        if num mod 2 = 0 then
+        begin
+            cantPares := cantPares + 1;
+        end
+        else
+        begin
+            cantImpares := cantImpares + 1;
+        end;
+        num := num div 10;
+    end;
+    
+    if cantImpares > cantPares then
+    begin
+        cumple = true;
+    end
+    else
+    begin
+        cumple = false;
+    end;
+end;
+
+procedure procesarLista (l : lista);
+var
+    dniActual : integer;
+    montoTotalTerceros : real;
+    v : vecMotivos;
+    
+    indiceMax : integer;
+    maximo : integer;
+    
+    cantTransTercerosCumple : integer;
+    
+begin
+    
+    indiceMax := 1;
+    maximo := -1;
+    cantTransTercerosCumple := 0;
+    
+    while (l<>nil) do
+    begin
+        montoTotalTerceros := 0;
+        dniActual := l^.dato.dniCuentaOrigen;
+        while ((l<>nil) and (dniActual = l^.dato.dniCuentaOrigen)) do
+        begin
+            montoTotalTerceros := montoTotalTerceros + l^.dato.monto;
+            
+            v[l^.dato.codigoMotivo] := v[l^.dato.codigoMotivo] + 1;
+            
+            
+            if (l^.dato.fecha.mes = 6) and (cumple(l^.dato.numCuentaDestino)) then
+            begin
+                cantTransTercerosCumple := cantTransTercerosCumple + 1;
+            end;
+            
+            l := l^.sig;
+        end;
+        writeln('El monto total transferido a terceros de = ', dniActual, ' es de = ', montoTotalTerceros); // Inciso B
+    end;
+    
+    actualizarMaximo(v, maximo, indiceMax);
+    writeln(indiceMax); // Inciso C
+    writeln(cantTransTercerosCumple); // Inciso D
+end;
+    
+
+var 
+    l : lista;
+    t : tranferencia;
+    listaTransferenciasTerceros : lista;
+    v : vecMotivos;
+begin
+    l := nil;
+    listaTransferenciasTerceros := nil;
+    inicializarVector(v);
+    cargarListaTransferencia(l, t); // Se dispone.
+    recorrerListaTrans(l, listaTransferenciasTerceros);
+    procesarLista(listaTransferenciasTerceros);
+end.    
