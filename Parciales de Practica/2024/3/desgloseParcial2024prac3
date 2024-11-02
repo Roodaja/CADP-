@@ -1,0 +1,111 @@
+TEMA 2-CADP 2024 29/6/2024 
+{
+Un supermercado está procesando las compras que realizaron sus clientes. 
+Para ello, dispone de una estructura de datos con todas las compras realizadas, sin ningún orden en particular. 
+De cada compra se conoce: código, año (entre 1980 y 2024), monto y DNI del cliente. 
+Un cliente puede haber realizado más de una compra. 
+Realizar un programa procese la información de las compras y: 
+a. Almacene en otra estructura de datos las compras realizadas entre los años 2010 y 2020. 
+Esta estructura debe quedar ordenada por el DNI del cliente. 
+b. Una vez almacenada la estructura del inciso a, procesar estos datos e informar: 
+1. El año con menor facturación. 
+2. Los dos DNI de los clientes que realizaron mayor cantidad de compras. 
+3. COMPLETO: El monto total facturado de compras con código múltiplo de 10.
+}
+
+const = 2 
+
+- Desglose del problema 
+
+Un supermercado está procesando las compras que realizaron sus clientes. 
+Para ello, dispone de una estructura de datos con todas las compras realizadas, sin ningún orden en particular. 
+De cada compra se conoce: código, año (entre 1980 y 2024), monto y DNI del cliente. 
+Un cliente puede haber realizado más de una compra. 
+
+- Esta parte indica que podemos hacer un corte de control por cliente.
+
+Realizar un programa procese la información de las compras y: 
+a. Almacene en otra estructura de datos las compras realizadas entre los años 2010 y 2020. 
+Esta estructura debe quedar ordenada por el DNI del cliente. 
+
+- En el programa principal : 
+
+read(año);
+verComprasAños(l, l2, año); // Llamamos un proceso que va a ver todas las compras que se realizaron en todos los años,
+// las que coincidan con el año ingresado van a guardarse en una nueva lista que va a estar ordenada por DNI.
+ 
+b. Una vez almacenada la estructura del inciso a, procesar estos datos e informar: 
+1. El año con menor facturación. 
+
+- Se haria un vector de años en donde se van a meter todos los montos de cada compra dentro de este
+el vector seria de tipo real.
+
+vecAños = array [rangoAños] of real;
+
+y luego se enviaria esa info y se veria el año con menor facturacion por medio de actualizar un minimo
+
+actualizarMinimo(vA);
+
+procedure actualizarMinimo ( v : vecAños);var
+    i, min, min2 : integer;
+    indiceMin, indiceMin2 : integer;
+begin
+    min := 999;
+    indiceMin := 0;
+    
+    for i := 1980 to const do // aca puede procesar la otra lista de 2010 y 2020 creo que esa es la correcta.
+    begin
+        if v[i] < min then
+        begin
+            min := v[i];
+            indiceMin := i;
+        end
+	end;
+	writeln(indiceMin)
+end;
+
+2. Los dos DNI de los clientes que realizaron mayor cantidad de compras. 
+
+- En un corte de control
+cantCompras := cantCompras + 1;
+fuera del corte
+actualizarMaximo(dniActual, cantCompras);
+
+procedure actualizarMaximo (dni : integer; compras : integer);
+var
+	max, max2 : integer;
+	dniMax, dniMax2 : integer;
+
+begin
+	max := 999;
+	max2 := 999;
+	
+	if compras < max then
+	begin
+		max2 := max;
+		max := compras;
+		dniMax := dni;
+	end
+	else	if compras < max2 then
+	begin
+		max2 := compras;
+		dniMax2 := dni;
+	end;
+	
+	writeln (dniMax, dniMax2);
+end;
+	
+
+3. COMPLETO: El monto total facturado de compras con código múltiplo de 10.
+
+Dentro de un corte de control 
+montoTotalMultiplo10 := 0;
+
+if l^.dato.codigo mod 10 = 0 then
+begin
+	montoTotalMultiplo10 := montoTotalMultiplo10 + l^.dato.monto;
+end;
+fuera de corte
+writeln(montoTotalMultiplo10);
+
+	
