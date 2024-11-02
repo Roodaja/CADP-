@@ -1,0 +1,131 @@
+{
+El productor musical Bizarrap organiza sesiones musicales con diferentes artistas. 
+Implementar un programa que lea y almacene información de dichas sesiones. 
+
+1) Leer y almacenar sesiones:
+
+De cada sesión se lee: título de sesión, nombre del artista,
+género musical (1: Trap Latino, 2: Reggaeton 3: Urban, 4: Electrónica, 5: Pop Rap) 
+ý cantidad de visualizaciones en YouTube. La lectura finaliza cuando se lee la sesión del artista con nombre "Peso Pluma", 
+la cual debe procesarse.
+
+2) Repeat - until (nomArtista = "Peso Pluma").
+
+La información debe quedar almacenada en una estructura de datos ordenada por título de sesión de forma ascendente. 
+
+3) InsertarOrdenado (Por titulo de sesion de menor a mayor). <>?
+
+Una vez leida y almacenada la información, se pide: 
+A. Informar los dos códigos de género musical con mayor cantidad de visualizaciones en YouTube. 
+
+4) 
+
+VecGeneros = array [1..gen] of integer;
+
+Esto iria dentro de un corte de control (al procesar la lista):
+
+vGen [l^.dato.generoMusical] := vGen [l^.dato.generoMusical]  + l^.dato.cantVisualizaciones;
+
+Esto iria afuera
+
+incializarVector(vGen);
+
+maximo := -1;
+maximo2 := -1;
+actualizarMaximos(vGen, maximo, maximo2);
+
+procedure actualizarMaximos (vG : vecGeneros; maximo: integer; maximo2: integer);
+var
+	i : integer;
+begin
+	for i := 1 to gen do
+	begin
+		if vG[i] > maximo then
+		begin
+			maximo2 := maximo;
+			indiceMax2 := indiceMax;
+			
+			indiceMax := i;
+			maximo := vG[i];
+		end
+		else
+		if vG[i] > maximo2 then
+		begin
+			maximo2 := vG[i];
+			indiceMax2 := i;
+		end;
+	end;
+	
+	writeln(indiceMax, indiceMax2); // Inciso A
+end;
+
+B. Informar la cantidad de sesiones del género "Reggaeton" cuya cantidad de visualizaciones contiene 
+la misma cantidad de dígitos pares que impares. 
+
+5)
+
+funcion cumple (num : integer): boolean;
+var
+	dig, cantPares, cantImpares : integer;
+begin
+	dig := 0;
+	cumple := false;
+	while (num<>0) do
+	begin
+		dig := num mod 10;
+		if  dig mod 2 = 0 then
+		begin
+			cantPares := cantPares + 1
+		end
+		else
+		begin 
+			cantImpares := cantImpares + 1;
+		end;
+		num := num div 10;
+	end;
+	
+	if cantPares = cantImpares then
+	begin
+		cumple = true;
+	end;
+end;
+
+cantSesiones := 0;
+Dentro de un corte de control
+	if ((l^.dato.generoMusical = 2) and (cumple(l^.dato.cantVisualizaciones)) then
+	begin
+		cantSesiones := cantSesiones + 1;
+	end;
+	
+	writeln(cantSesiones) // Inciso B
+		
+C. COMPLETO: Realizar un módulo que reciba un título de sesión 
+y elimine dicha sesión de la estructura. El título de sesión puede no existir.
+
+elimarPorTitulo(var l : lista; tit : string);
+var
+	act, ant : lista;
+begin
+	act := l;
+	ant := l;
+	while (act <> nil) and (act^.dato.tit <> tit) do
+	begin
+		ant := act;
+		act := act^.sig;
+	end;
+	if (act = nil) then
+	begin
+		writeln ('No existe ese nombre');
+	end
+	else
+	begin
+		ant^.sig := act^.sig;
+		dispose(act);
+	end;
+end;
+
+
+
+Invocar el módulo desarrollado en el 
+programa principal con un título leído por teclado.
+}
